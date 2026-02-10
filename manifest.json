@@ -1,0 +1,24 @@
+{
+  "manifest_version": 3,
+  "name": "Digital Candle",
+  "version": "1.0",
+  "description": "Ambient interaction stability visualizer",
+
+  "host_permissions": [
+    "<all_urls>"
+  ],
+
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ],
+
+  "web_accessible_resources": [
+    {
+      "resources": ["candle.css", "candle.js"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}

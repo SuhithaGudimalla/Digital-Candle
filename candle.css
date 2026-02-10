@@ -1,0 +1,24 @@
+#digital-candle {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;          /* 👈 bottom-right corner */
+  z-index: 999999;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  pointer-events: none; /* non-intrusive */
+}
+
+#candle-body {
+  width: 26px;
+  height: 60px;
+  background-color: #f2f2f2;
+  border-radius: 6px;
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+}
+
+#flame {
+  margin-bottom: -10px;
+}
