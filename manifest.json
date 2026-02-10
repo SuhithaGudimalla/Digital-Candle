@@ -17,7 +17,7 @@
 
   "web_accessible_resources": [
     {
-      "resources": ["candle.css", "candle.js"],
+      "resources": ["candle.css", "candle.js","timer.js"],
       "matches": ["<all_urls>"]
     }
   ]

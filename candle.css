@@ -8,7 +8,7 @@
   flex-direction: column;
   align-items: center;
 
-  pointer-events: none; /* non-intrusive */
+  pointer-events: auto; /* non-intrusive */
   
   transform: scale(0.7);   /* 🔥 resize candle */
   transform-origin: bottom right;

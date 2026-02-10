@@ -22,6 +22,12 @@
   const script = document.createElement("script");
   script.src = chrome.runtime.getURL("candle.js");
   document.body.appendChild(script);
+
+  // Inject timer JS
+  const timerScript = document.createElement("script");
+  timerScript.src = chrome.runtime.getURL("timer.js");
+  document.body.appendChild(timerScript);
+
 })();
 
 
