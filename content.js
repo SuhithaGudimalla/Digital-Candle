@@ -24,7 +24,8 @@
   document.body.appendChild(script);
 })();
 
-// --- Interaction capture (STEP 3) ---
+
+// -------- STEP 3: Interaction Capture --------
 let lastKeyTime = null;
 let keyEvents = [];
 
@@ -41,9 +42,11 @@ document.addEventListener("keydown", (e) => {
   lastKeyTime = now;
 });
 
-function extractFeatures(events, windowDurationMs) {
-  const totalKeys = events.length;
-  const typingSpeed = totalKeys / (windowDurationMs / 1000);
+
+// -------- STEP 4: Feature Extraction --------
+function extractFeatures(events, windowMs) {
+  const total = events.length;
+  const typingSpeed = total / (windowMs / 1000);
 
   let sumIntervals = 0;
   let backspaces = 0;
@@ -53,55 +56,86 @@ function extractFeatures(events, windowDurationMs) {
     if (e.isBackspace) backspaces++;
   }
 
-  const avgPause = sumIntervals / totalKeys;
+  const avgPause = sumIntervals / total;
 
-  // Variance calculation
   let varianceSum = 0;
   for (let e of events) {
     varianceSum += Math.pow(e.interval - avgPause, 2);
   }
-  const pauseVariance = varianceSum / totalKeys;
-
-  const correctionRate = backspaces / totalKeys;
 
   return {
     typingSpeed,
-    avgPause,
-    pauseVariance,
-    correctionRate
+    pauseVariance: varianceSum / total,
+    correctionRate: backspaces / total
   };
 }
 
+
+// -------- STEP 5: Stability Score --------
 function computeStabilityScore(features) {
   let score = 100;
 
-  // Penalize high pause variance (instability)
+  // Existing penalties
   score -= Math.min(features.pauseVariance / 5000, 40);
-
-  // Penalize high correction rate
   score -= features.correctionRate * 30;
 
-  // Penalize extremely slow typing
-  if (features.typingSpeed < 1) {
-    score -= 15;
+  // 🔥 NEW: speed sensitivity (small & safe)
+  if (features.typingSpeed > 4) {
+    // Fast typing → slight instability
+    score -= (features.typingSpeed - 4) * 5;
   }
 
-  // Clamp score between 0 and 100
-  score = Math.max(0, Math.min(100, score));
+  if (features.typingSpeed < 2) {
+    // Calm / slow typing → slightly more stability
+    score += (2 - features.typingSpeed) * 5;
+  }
 
-  return score;
+  return Math.max(0, Math.min(100, score));
 }
 
 
+
+// -------- STEP 5.5: Correction Bursts --------
+function detectCorrectionBursts(events) {
+  let bursts = 0;
+  let consecutive = 0;
+
+  for (let e of events) {
+    if (e.isBackspace && e.interval < 800) {
+      consecutive++;
+      if (consecutive >= 2) {
+        bursts++;
+        consecutive = 0;
+      }
+    } else {
+      consecutive = 0;
+    }
+  }
+
+  return bursts;
+}
+
+
+// -------- WINDOW (10 seconds – original) --------
 setInterval(() => {
   if (keyEvents.length === 0) return;
 
-  const features = extractFeatures(keyEvents, 10000);
-  const stabilityScore = computeStabilityScore(features);
+  const features = extractFeatures(keyEvents, 2500);
+  const stability = computeStabilityScore(features);
+  const bursts = detectCorrectionBursts(keyEvents);
 
-  console.log("Stability score:", stabilityScore);
+  // ✅ Console output restored
+  console.log("Stability score:", stability);
+  console.log("Correction bursts:", bursts);
 
-  // Reset window
+  // Send ONLY stability (no speed, no brightness)
+  window.postMessage(
+    {
+      type: "CANDLE_UPDATE",
+      stability: stability
+    },
+    "*"
+  );
+
   keyEvents = [];
-}, 10000);
-
+}, 2500);
