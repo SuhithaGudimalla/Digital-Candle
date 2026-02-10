@@ -9,12 +9,15 @@
   align-items: center;
 
   pointer-events: none; /* non-intrusive */
+  
+  transform: scale(0.7);   /* 🔥 resize candle */
+  transform-origin: bottom right;
 }
 
 #candle-body {
   width: 26px;
-  height: 60px;
-  background-color: #f2f2f2;
+  height: 65px;
+  background-color: #dfc7c7;
   border-radius: 6px;
   box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
 }

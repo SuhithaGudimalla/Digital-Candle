@@ -12,7 +12,7 @@
   const container = document.createElement("div");
   container.innerHTML = `
     <div id="digital-candle">
-      <canvas id="flame" width="80" height="120"></canvas>
+      <canvas id="flame" width="140" height="180"></canvas>
       <div id="candle-body"></div>
     </div>
   `;
