@@ -92,6 +92,12 @@ if (!window.candleTimerPanelLoaded) {
     window.candleTimer.startTime = null;
     window.candleTimer.meltProgress = 0;
 
+    // 🔔 Notify content script to reset candle
+    window.postMessage(
+      { type: "CANDLE_MELT", meltProgress: 0 },
+      "*"
+    );
+
     console.log("Timer stopped");
   };
 
@@ -102,8 +108,17 @@ if (!window.candleTimerPanelLoaded) {
     const elapsed = Date.now() - window.candleTimer.startTime;
     const progress = elapsed / window.candleTimer.duration;
 
-    window.candleTimer.meltProgress =
-      Math.min(Math.max(progress, 0), 1);
+    const clamped = Math.min(Math.max(progress, 0), 1);
+    window.candleTimer.meltProgress = clamped;
+
+    // 🔥 SEND MELT PROGRESS TO CONTENT SCRIPT
+    window.postMessage(
+      {
+        type: "CANDLE_MELT",
+        meltProgress: clamped
+      },
+      "*"
+    );
 
     if (progress >= 1) {
       window.candleTimer.enabled = false;

@@ -20,6 +20,9 @@
   background-color: #dfc7c7;
   border-radius: 6px;
   box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  
+  margin: 0 auto;
+  transition: height 0.5s ease, border-radius 0.5s ease;
 }
 
 #flame {

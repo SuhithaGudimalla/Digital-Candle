@@ -27,7 +27,6 @@
   const timerScript = document.createElement("script");
   timerScript.src = chrome.runtime.getURL("timer.js");
   document.body.appendChild(timerScript);
-
 })();
 
 
@@ -81,24 +80,19 @@ function extractFeatures(events, windowMs) {
 function computeStabilityScore(features) {
   let score = 100;
 
-  // Existing penalties
   score -= Math.min(features.pauseVariance / 5000, 40);
   score -= features.correctionRate * 30;
 
-  // 🔥 NEW: speed sensitivity (small & safe)
   if (features.typingSpeed > 4) {
-    // Fast typing → slight instability
     score -= (features.typingSpeed - 4) * 5;
   }
 
   if (features.typingSpeed < 2) {
-    // Calm / slow typing → slightly more stability
     score += (2 - features.typingSpeed) * 5;
   }
 
   return Math.max(0, Math.min(100, score));
 }
-
 
 
 // -------- STEP 5.5: Correction Bursts --------
@@ -122,7 +116,7 @@ function detectCorrectionBursts(events) {
 }
 
 
-// -------- WINDOW (10 seconds – original) --------
+// -------- STABILITY WINDOW --------
 setInterval(() => {
   if (keyEvents.length === 0) return;
 
@@ -130,11 +124,9 @@ setInterval(() => {
   const stability = computeStabilityScore(features);
   const bursts = detectCorrectionBursts(keyEvents);
 
-  // ✅ Console output restored
   console.log("Stability score:", stability);
   console.log("Correction bursts:", bursts);
 
-  // Send ONLY stability (no speed, no brightness)
   window.postMessage(
     {
       type: "CANDLE_UPDATE",
@@ -145,3 +137,29 @@ setInterval(() => {
 
   keyEvents = [];
 }, 2500);
+
+
+// ---------------- MELTING (POSTMESSAGE-BASED) ----------------
+const candleBody = document.getElementById("candle-body");
+const FULL_HEIGHT = 65; // MUST match candle.css
+
+let meltProgress = 0;
+
+// Receive melt progress from timer.js
+window.addEventListener("message", (event) => {
+  if (event.data && event.data.type === "CANDLE_MELT") {
+    meltProgress = event.data.meltProgress;
+  }
+});
+
+// Apply melting visually
+setInterval(() => {
+  if (!candleBody) return;
+
+  const newHeight = FULL_HEIGHT * (1 - meltProgress);
+  candleBody.style.height = Math.max(newHeight, 4) + "px";
+
+  const meltiness = meltProgress * 12;
+  candleBody.style.borderTopLeftRadius = meltiness + "px";
+  candleBody.style.borderTopRightRadius = meltiness + "px";
+}, 200);
