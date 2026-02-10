@@ -23,8 +23,32 @@
   
   margin: 0 auto;
   transition: height 0.5s ease, border-radius 0.5s ease;
+
+  position: relative;   
+  overflow: hidden;
 }
 
 #flame {
   margin-bottom: -10px;
 }
+
+/* -------- WAX DRIPS -------- */
+.wax-drip {
+  position: absolute;
+  top: 0px;              /* 🔥 start exactly at candle top */
+  width: 6px;
+  height: 0px;
+  background: #8e6565;
+  border-radius: 0 0 50% 50%;
+  box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.2);
+  transition: height 0.3s ease;
+}
+
+.wax-drip.left {
+  left: 3px;
+}
+
+.wax-drip.right {
+  right: 4px;
+}
+

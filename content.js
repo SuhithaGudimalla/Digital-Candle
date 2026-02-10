@@ -13,7 +13,11 @@
   container.innerHTML = `
     <div id="digital-candle">
       <canvas id="flame" width="140" height="180"></canvas>
-      <div id="candle-body"></div>
+      <div id="candle-body">
+        <div class="wax-drip left"></div>
+        <div class="wax-drip right"></div>
+      </div>
+
     </div>
   `;
   document.body.appendChild(container);
@@ -163,3 +167,23 @@ setInterval(() => {
   candleBody.style.borderTopLeftRadius = meltiness + "px";
   candleBody.style.borderTopRightRadius = meltiness + "px";
 }, 200);
+
+// ---------------- WAX DRIP EFFECT ----------------
+const drips = document.querySelectorAll(".wax-drip");
+
+setInterval(() => {
+  drips.forEach((drip, index) => {
+    if (meltProgress < 0.15) {
+      drip.style.height = "0px";
+      return;
+    }
+
+    // Stagger drip lengths slightly
+    const base = (meltProgress - 0.15) * 40;
+    const variance = index * 6;
+
+    const dripHeight = Math.min(base + variance, 30);
+    drip.style.height = dripHeight + "px";
+  });
+}, 300);
+
