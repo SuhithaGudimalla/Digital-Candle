@@ -72,13 +72,34 @@ function extractFeatures(events, windowDurationMs) {
   };
 }
 
+function computeStabilityScore(features) {
+  let score = 100;
+
+  // Penalize high pause variance (instability)
+  score -= Math.min(features.pauseVariance / 5000, 40);
+
+  // Penalize high correction rate
+  score -= features.correctionRate * 30;
+
+  // Penalize extremely slow typing
+  if (features.typingSpeed < 1) {
+    score -= 15;
+  }
+
+  // Clamp score between 0 and 100
+  score = Math.max(0, Math.min(100, score));
+
+  return score;
+}
+
 
 setInterval(() => {
   if (keyEvents.length === 0) return;
 
   const features = extractFeatures(keyEvents, 10000);
+  const stabilityScore = computeStabilityScore(features);
 
-  console.log("Extracted features:", features);
+  console.log("Stability score:", stabilityScore);
 
   // Reset window
   keyEvents = [];
