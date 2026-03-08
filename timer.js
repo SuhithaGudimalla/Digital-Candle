@@ -13,35 +13,52 @@ if (!window.candleTimerPanelLoaded) {
   // ---------------- CREATE PANEL ----------------
   const panel = document.createElement("div");
   panel.id = "candle-timer-panel";
-  panel.style.cssText = `
-    position: fixed;
-    bottom: 120px;
-    right: 20px;
-    background: #1e1e1e;
-    color: #fff;
-    padding: 12px;
-    border-radius: 8px;
-    font-size: 12px;
-    display: none;
-    z-index: 999999;
-    width: 180px;
-  `;
+  panel.style.position = "fixed";
+  panel.style.bottom = "120px";
+  panel.style.right = "20px";
+  panel.style.background = "#1e1e1e";
+  panel.style.color = "#fff";
+  panel.style.padding = "12px";
+  panel.style.borderRadius = "8px";
+  panel.style.fontSize = "12px";
+  panel.style.display = "none";
+  panel.style.zIndex = "999999";
+  panel.style.width = "180px";
 
-  panel.innerHTML = `
-    <label style="display:block;margin-bottom:6px;">
-      Duration (minutes):
-    </label>
-    <input id="candle-minutes" type="number" min="1" placeholder="25"
-      style="width:100%;margin-bottom:8px;padding:4px;" />
+  // ----- LABEL -----
+  const label = document.createElement("label");
+  label.textContent = "Duration (minutes):";
+  label.style.display = "block";
+  label.style.marginBottom = "6px";
 
-    <button id="start-timer" style="width:100%;margin-bottom:6px;">
-      Start Timer
-    </button>
+  // ----- INPUT -----
+  const input = document.createElement("input");
+  input.id = "candle-minutes";
+  input.type = "number";
+  input.min = "1";
+  input.placeholder = "25";
+  input.style.width = "100%";
+  input.style.marginBottom = "8px";
+  input.style.padding = "4px";
 
-    <button id="stop-timer" style="width:100%;">
-      Stop Timer
-    </button>
-  `;
+  // ----- START BUTTON -----
+  const startBtn = document.createElement("button");
+  startBtn.id = "start-timer";
+  startBtn.textContent = "Start Timer";
+  startBtn.style.width = "100%";
+  startBtn.style.marginBottom = "6px";
+
+  // ----- STOP BUTTON -----
+  const stopBtn = document.createElement("button");
+  stopBtn.id = "stop-timer";
+  stopBtn.textContent = "Stop Timer";
+  stopBtn.style.width = "100%";
+
+  // Append elements
+  panel.appendChild(label);
+  panel.appendChild(input);
+  panel.appendChild(startBtn);
+  panel.appendChild(stopBtn);
 
   document.body.appendChild(panel);
 
@@ -65,10 +82,8 @@ if (!window.candleTimerPanelLoaded) {
   });
 
   // ---------------- TIMER LOGIC ----------------
-  document.getElementById("start-timer").onclick = () => {
-    const minutes = Number(
-      document.getElementById("candle-minutes").value
-    );
+  startBtn.onclick = () => {
+    const minutes = Number(input.value);
 
     if (!minutes || minutes <= 0) {
       alert("Please enter valid minutes");
@@ -87,12 +102,12 @@ if (!window.candleTimerPanelLoaded) {
     });
   };
 
-  document.getElementById("stop-timer").onclick = () => {
+  stopBtn.onclick = () => {
     window.candleTimer.enabled = false;
     window.candleTimer.startTime = null;
     window.candleTimer.meltProgress = 0;
 
-    // 🔔 Notify content script to reset candle
+    // Reset candle
     window.postMessage(
       { type: "CANDLE_MELT", meltProgress: 0 },
       "*"
@@ -111,7 +126,7 @@ if (!window.candleTimerPanelLoaded) {
     const clamped = Math.min(Math.max(progress, 0), 1);
     window.candleTimer.meltProgress = clamped;
 
-    // 🔥 SEND MELT PROGRESS TO CONTENT SCRIPT
+    // Send melt progress to content script
     window.postMessage(
       {
         type: "CANDLE_MELT",
