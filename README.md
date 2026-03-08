@@ -182,23 +182,23 @@ By visualizing interaction patterns through a familiar metaphor, users can devel
 
 ## 🛠️ Tech Stack
 
-JavaScript
-HTML5
-CSS3
-Canvas API
-Chrome Extension APIs
+* JavaScript
+* HTML5
+* CSS3
+* Canvas API
+* Chrome Extension APIs
 
 ---
 
-# License
+## License
 
 MIT License
 
 ---
 
-# Author
+## Author
 
 Suhitha G
-AIML Student | App Development | Creative Tech Projects
+* AIML Student | App Development | Creative Tech Projects
 
 ---
